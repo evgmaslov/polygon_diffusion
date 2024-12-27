@@ -5,13 +5,14 @@ from model_utils import PolygonDiffusionModel, PolygonTransformerModel, polygon_
 from train_utils import train_defaults, ImageCallback
 from data_utils import get_corruption_dataset, corruption_collator
 from transformers import Trainer, TrainingArguments
+from datasets import load_dataset
 
 def main():
     args = create_argparser().parse_args()
 
     diffusion_model = PolygonDiffusionModel(polygon_model_defaults(), guided=True)
 
-    dataset = get_corruption_dataset(args.dataset_json_folder)
+    dataset = load_dataset("evgmaslov/polygons")
     dataset = dataset.train_test_split(test_size=args.test_size, seed=args.random_seed)
 
     training_params = TrainingArguments(

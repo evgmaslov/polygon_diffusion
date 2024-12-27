@@ -1021,7 +1021,7 @@ def get_corruption_dataset(rplan_json_corrupt_path):
     corrupts = []
     graphs = []
     areas = []
-    names = [names[1]]
+    #names = [names[1]]
     for name in tqdm(names):
         path = os.path.join(rplan_json_corrupt_path, name)
         with open(path, "r") as f:
@@ -1046,11 +1046,11 @@ def get_corruption_dataset(rplan_json_corrupt_path):
         corrupts.append(local_corrupts)
         graphs.append(local_graph)
         areas.append(local_areas)
-    base_polygons = base_polygons * 200000
+    """base_polygons = base_polygons * 200000
     corrupted_polygons = corrupted_polygons * 200000
     corrupts = corrupts * 200000
     graphs = graphs * 200000
-    areas = areas * 200000
+    areas = areas * 200000"""
     dataset_dict = dict(
         base_polygons=base_polygons,
         corrupted_polygons=corrupted_polygons,
