@@ -341,7 +341,7 @@ def fix_contour_holes(img_room_ind):
                         holes.append(np.expand_dims(hole, axis=1))
         if len(holes) > 0:
             holes = np.concatenate(holes, axis=1)
-            new_img_room_ind[*holes] = room_ind
+            new_img_room_ind[holes[0], holes[1]] = room_ind
     return new_img_room_ind
 
 def get_rooms_without_spans(img):
@@ -470,7 +470,7 @@ def get_rooms_without_spans(img):
             line = lines[i]
             line_points = line["points"]
             move = moves.tolist()[i]
-            move_mask[*line_points] = move
+            move_mask[line_points[0], line_points[1]] = move
         move_masks.append(move_mask)
         vh_moves.append(moves)
     
@@ -516,7 +516,7 @@ def get_rooms_without_spans(img):
                 max_bound = line[bound_ind].max()
                 move_mask = move_masks[1] if equal_ind == 0 else move_masks[0]
 
-                move_values = list(set(move_mask[*line].flatten().tolist()))
+                move_values = list(set(move_mask[line[0], line[1]].flatten().tolist()))
                 if 0 in move_values:
                     move_values.remove(0)
                 if len(move_values) == 0:
@@ -861,7 +861,7 @@ def neib_corrupt(polygons, cor_ind, pair_ind):
                 test_edge = [p.copy() for p in edge1]
                 test_line = edge_to_line(test_edge)
                 test_line += np.repeat(v, test_line.shape[1], axis=1)
-                if len(np.where(pair_mask[*test_line] == 1)[0]) == 0 and len(np.where(rest_mask[*test_line] == 1)[0]) > 1:
+                if len(np.where(pair_mask[test_line[0], test_line[1]] == 1)[0]) == 0 and len(np.where(rest_mask[test_line[0], test_line[1]] == 1)[0]) > 1:
                     valid_dir_vecs.append(v)
     if len(valid_dir_vecs) == 0:
         return None

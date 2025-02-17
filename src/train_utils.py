@@ -8,7 +8,7 @@ from transformers import GenerationConfig
 from transformers.integrations import WandbCallback
 import random
 import wandb
-from data_utils import polygon_to_mask, corruption_collator, model_outputs_to_reconstructions
+from .data_utils import polygon_to_mask, corruption_collator, model_outputs_to_reconstructions
 from PIL import Image
 from tqdm.auto import tqdm
 
@@ -18,15 +18,15 @@ def train_defaults():
         loss_type = "MSE",
         lr=1e-4,
         weight_decay=0.0,
-        batch_size=64,
+        batch_size=1024,
         n_epochs=40,
         test_size=0.1,
         random_seed=42,
         output_dir="",
-        save_steps=1000,
+        save_steps=100,
         eval_strategy="steps",
-        eval_steps=1000,
-        logging_steps=200,
+        eval_steps=100,
+        logging_steps=20,
         push_to_hub=False,
         hub_strategy="checkpoint"
     )

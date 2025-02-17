@@ -11,7 +11,7 @@ import math
 import numpy as np
 import torch as th
 from tqdm.auto import tqdm
-from train_utils import GaussianKLDivLoss, DiscreteGaussianNLLLoss
+from .train_utils import GaussianKLDivLoss, DiscreteGaussianNLLLoss
 from torch import nn
 
 def diffusion_defaults():

@@ -2,7 +2,7 @@ import math
 import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
-from train_utils import GaussianKLDivLoss, DiscreteGaussianNLLLoss, UniformSampler
+from .train_utils import GaussianKLDivLoss, DiscreteGaussianNLLLoss, UniformSampler
 import numpy as np
 from diffusers import DDPMScheduler
 from tqdm.auto import tqdm
@@ -241,8 +241,7 @@ class PolygonDiffusionModel(nn.Module):
             x0 = th.cat([model_kwargs["shift"] + model_kwargs["corrupt"], model_kwargs["corrupt"]], dim=2)
             condition = th.cat([th.zeros_like(model_kwargs["shift"]), model_kwargs["corrupt"]], dim=2)
 
-        t = th.randint(0, len(self.noise_scheduler.timesteps), (x0.shape[0],), device=x0.device, dtype=th.long)
-        t = t.to(x0.device)
+        t = th.randint(0, len(self.noise_scheduler.timesteps), (x0.shape[0],), device=x0.device, dtype=th.long).to(f'cuda:{th.cuda.current_device()}')
 
         noise = th.randn_like(x0)
 
@@ -264,18 +263,18 @@ class PolygonDiffusionModel(nn.Module):
     def generate(self, shape, model_kwargs):
         with th.no_grad():
             if not self.guided:
-                sample = th.randn(shape).to("cuda")
+                sample = th.randn(shape).cuda()
             else:
-                sample = th.randn((shape[0], shape[1], shape[2]*2)).to("cuda")
+                sample = th.randn((shape[0], shape[1], shape[2]*2)).cuda()
             for t in tqdm(self.noise_scheduler.timesteps):
-                time = sample.new_full((sample.shape[0],), t, dtype=th.long).to("cuda")
+                time = sample.new_full((sample.shape[0],), t, dtype=th.long).cuda()
 
                 if not self.guided:
                     xt = self.base_model(sample, time, **model_kwargs)
                     sample = self.noise_scheduler.step(xt, t, sample).prev_sample
                 else:
-                    condition = th.cat([th.zeros(shape).to("cuda"), model_kwargs["corrupt"]], dim=2)
-                    mask = th.cat([th.zeros(shape).to("cuda"), th.ones(shape).to("cuda")], dim=2)
+                    condition = th.cat([th.zeros(shape).cuda(), model_kwargs["corrupt"]], dim=2)
+                    mask = th.cat([th.zeros(shape).cuda(), th.ones(shape).cuda()], dim=2)
                     sample = self.guided_sampling_step(sample, time, condition, mask, model_kwargs)
 
             if self.guided:
